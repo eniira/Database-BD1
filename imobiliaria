@@ -1,0 +1,137 @@
+-- Imobiliaria
+-- Aluna: Catarine Soares Cruz 
+-- LINK: https://github.com/eniira/Database-BD1
+
+DROP TABLE IF EXISTS MERC_FAZ_ANUN, CORR_TEM_CLI, CLIENTE, FIADOR, NEGOCIADOR_COMPRADOR, 
+NEGOCIADOR_INQUILINO ,NEGOCIADOR,FUNCIONARIO_MERCADOLOGO,FUNCIONARIO_CORRETOR ,FUNCIONARIO, 
+IMOVEL_ALUGUEL, IMOVEL_VENDA, IMOVEL, ANUNCIO;
+
+CREATE TABLE CLIENTE (
+	email VARCHAR(50),
+	telefone CHAR(11),
+	nome VARCHAR(50),
+	PRIMARY KEY (email);
+);
+
+CREATE TABLE ANUNCIO (
+	codigo INTEGER,
+	orcamento REAL,
+	local VARCHAR(50),
+	vzs_anuncio INTEGER,
+	codigo_imo INTEGER,
+	PRIMARY KEY (codigo),
+	FOREIGN KEY (codigo_imo) REFERENCES IMOVEL(codigo);
+);
+
+CREATE TABLE NEGOCIADOR(
+	email VARCHAR(50),
+	telefone CHAR(11),
+	nome VARCHAR(50),
+	PRIMARY KEY (email);
+);
+
+CREATE TABLE NEGOCIADOR_INQUILINO(
+	email VARCHAR(50),
+	cpf_fia CHAR(11),
+	PRIMARY KEY (email),
+	FOREIGN KEY(email) REFERENCES NEGOCIADOR(email) ON DELETE CASCADE,
+	FOREIGN KEY (cpf_fia) REFERENCES FIADOR (cpf);
+);
+
+CREATE TABLE NEGOCIADOR_COMPRADOR(
+	email VARCHAR(50),
+	PRIMARY KEY (email),
+	FOREIGN KEY(email) REFERENCES NEGOCIADOR(email) ON DELETE CASCADE;
+);
+
+CREATE TABLE FUNCIONARIO(
+	cpf CHAR(11),
+	nome VARCHAR(50),
+	telefone CHAR(11),
+	PRIMARY KEY(cpf);
+);
+
+CREATE TABLE FUNCIONARIO_MERCADOLOGO(
+	area_atuacao VARCHAR(50),
+	tempo_empr INTEGER,
+	estrategia_utit VARCHAR(50),
+	cpf_merc CHAR(11),
+	PRIMARY KEY(cpf_merc),
+	FOREIGN KEY(cpf_merc) REFERENCES FUNCIONARIO(cpf) ON DELETE CASCADE;
+);
+
+CREATE TABLE FUNCIONARIO_CORRETOR(
+	email VARCHAR(50),
+	CRECI???? INTEGER,
+	treinamento VARCHAR(50),
+	cpf_corr CHAR(11),
+	PRIMARY KEY(cpf_corr),
+	FOREIGN KEY(cpf_corr) REFERENCES FUNCIONARIO(cpf) ON DELETE CASCADE;
+);
+
+CREATE TABLE FIADOR(
+	nome VARCHAR(50),
+	cpf CHAR(11),
+	contrato VARCHAR(100),
+	PRIMARY KEY (cpf);
+);
+
+CREATE TABLE IMOVEL(
+	codigo INTEGER,
+	comissao REAL,
+	status VARCHAR(10),
+	endereco VARCHAR(100),
+	metragem REAL,
+	descricao VARCHAR(100),
+	email_cli VARCHAR(100),
+	PRIMARY KEY (codigo),
+	FOREIGN KEY(email_cli) REFERENCES CLIENTE(email);
+);
+
+CREATE TABLE IMOVEL_ALUGUEL(
+	condicoes VARCHAR(100),
+	valorMensal REAL,
+	periodo INTEGER,
+	codigo_alug INTEGER,
+	cpf_corr CHAR(11),
+	email_inq VARCHAR(50),
+	dataInicio DATE,
+	dataFim DATE,
+	vencimento DATE,
+	PRIMARY KEY(codigo_alug),
+	FOREIGN KEY(codigo_alug) REFERENCES IMOVEL(codigo) ON DELETE CASCADE,
+	FOREIGN KEY (cpf_corr) REFERENCES FUNCIONARIO_CORRETOR (cpf_corr),
+	FOREIGN KEY (email_inq) REFERENCES NEGOCIADOR_INQUILINO (email);
+
+);
+
+CREATE TABLE IMOVEL_VENDA(
+	tipo VARCHAR(20),
+	registro VARCHAR(20),
+	valorTotal REAL
+	codigo_vend INTEGER,
+	cpf_corr CHAR(11),
+	email_comp VARCHAR(50),
+	dataVenda DATE,
+	PRIMARY KEY(codigo_vend),
+	FOREIGN KEY(codigo_vend) REFERENCES IMOVEL(codigo) ON DELETE CASCADE,
+	FOREIGN KEY (cpf_corr) REFERENCES FUNCIONARIO_CORRETOR (cpf_corr),
+	FOREIGN KEY (email_comp) REFERENCES NEGOCIADOR_COMPRADOR (email);
+);
+
+CREATE TABLE MERC_FAZ_ANUN(
+	codigo INTEGER,
+	cpf_merc CHAR(11),
+	PRIMARY KEY (codigo, cpf_merc);
+	FOREIGN KEY (codigo) REFERENCES ANUNCIO(codigo),
+	FOREIGN KEY (cpf_merc) REFERENCES FUNCIONARIO_MERCADOLOGO(cpf_merc);
+);
+
+
+CREATE TABLE CORR_TEM_CLI(
+	email_cli VARCHAR(100),
+	cpf_corr CHAR(11),
+	PRIMARY KEY (email_cli, cpf_corr),
+	FOREIGN KEY (email_cli) REFERENCES CLIENTE (email),
+	FOREIGN KEY (cpf_corr) REFERENCES FUNCIONARIO_CORRETOR(cpf_corr);
+);
